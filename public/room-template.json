@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "name": "Paul & Carla · Walk-in closet",
+  "units": "mm",
+  "measurementStatus": "awaiting-measurements",
+  "sourceChat": "https://chatgpt.com/share/6aa540b1-2394-83e9-ab8f-fd889c2f37bf?ogimg=plain",
+  "room": {
+    "shape": "rectangle",
+    "width": null,
+    "depth": null,
+    "height": null,
+    "wallMeasurements": {
+      "front": null,
+      "back": null,
+      "left": null,
+      "right": null
+    },
+    "notes": ""
+  },
+  "openings": [],
+  "fixtures": [],
+  "items": [],
+  "references": [],
+  "sourcing": [],
+  "preferences": {
+    "budgetZar": null,
+    "styleNotes": "",
+    "storageNeeds": "",
+    "currency": "ZAR"
+  }
+}
