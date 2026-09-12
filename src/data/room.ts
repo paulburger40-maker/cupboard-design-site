@@ -4,7 +4,8 @@
  */
 export type Wall = 'front' | 'back' | 'left' | 'right';
 export type Size = { width: number; depth: number; height: number };
-export type Item = { id: string; kind: 'cupboard' | 'vanity' | 'chair'; name: string; size: Size; position: { x: number; z: number }; finish: 'oak' | 'white' | 'walnut'; productId: string | null };
+export type Item = { id: string; kind: 'cupboard' | 'vanity' | 'chair'; name: string; size: Size; position: { x: number; z: number }; finish: 'oak' | 'white' | 'walnut'; productId: string | null; rotation?:number; interior?:{shelves:number;drawers:number;railHeight:number;split:number;doors:boolean}; modified?:boolean };
+export function footprint(item:Item){const swap=(item.rotation??0)%180!==0;return {width:swap?item.size.depth:item.size.width,depth:swap?item.size.width:item.size.depth};}
 export interface RoomProject {
   schemaVersion: 1;
   name: string;
@@ -37,10 +38,12 @@ export const demoProject: RoomProject = {
   ]
 };
 export function layoutWarnings(project: RoomProject): string[] {
+  project={...project,items:project.items.map(i=>({...i,size:{...i.size,...footprint(i)}}))};
   const {width,depth,height} = project.room;
   if (!width || !depth || !height) return ['Enter all three room dimensions to build the room.'];
   const warnings: string[] = [];
   for (const item of project.items) {
+    if(item.interior && (item.interior.railHeight>item.size.height-30 || item.interior.drawers*190+30>item.size.height)) warnings.push(`${item.name}: interior exceeds cupboard height.`);
     if (item.position.x < 0 || item.position.z < 0 || item.position.x + item.size.width > width || item.position.z + item.size.depth > depth || item.size.height > height) warnings.push(`${item.name} extends outside the room.`);
     if(project.room.ceiling){const slope=project.room.ceiling;const at=(z:number)=>slope.frontHeight+(slope.backHeight-slope.frontHeight)*z/depth;const limit=Math.min(at(item.position.z),at(item.position.z+item.size.depth));if(item.size.height>limit)warnings.push(`${item.name} intersects the sloping ceiling.`);}
   }
@@ -52,6 +55,7 @@ export function layoutWarnings(project: RoomProject): string[] {
 }
 export const measuredProject: RoomProject = {
   ...structuredClone(blankProject), measurementStatus:'draft',
+  preferences:{budgetZar:20000,currency:'ZAR',styleNotes:'Light oak and warm white, open hanging, drawers, shoe shelves, warm lighting, vanity and chair. Delivery area: Hekpoort; farm delivery quote required.',storageNeeds:'Paul and Carla: shared two-sided storage, make-up table and chair.'},
   room:{shape:'rectangle',width:2260,depth:3890,height:3570,wallMeasurements:{front:2260,back:2260,left:3890,right:3890},ceiling:{kind:'linear-slope',frontHeight:3570,backHeight:2880,checkPoints:[{z:2150,height:3220}]},notes:'Transcribed from AANTREK KAMER.pdf. Front = doorway; back = window. Straight slope between end heights assumed. Mid-height 3220 at z=2150 differs from linear interpolation by 31 mm. Window offsets 400+1460+410=2270 versus 2260 wall; left offset retained for draft (right becomes 400).'},
   openings:[{id:'door',kind:'door',wall:'front',offset:680,width:900,height:2350,sillHeight:0,swing:null},{id:'window',kind:'window',wall:'back',offset:400,width:1460,height:620,sillHeight:1750,swing:null}],
   fixtures:[{id:'socket-window',kind:'socket',wall:'back',offset:1080,heightFromFloor:410,width:100,height:null,projection:null,notes:'Bottom at 410 mm. 1080 mm each side implies 100 mm box width on a 2260 wall; actual box dimensions to verify. No guessed box height.'}],

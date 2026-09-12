@@ -29,3 +29,11 @@ Editable rectangular room dimensions; editable cupboard/table/chair sizes and po
 ## Deliberate limits
 
 Not a construction drawing or a completed closet design. Door and window openings and a sloped ceiling are rendered. The overview cuts away front/right walls and makes the ceiling transparent; inside view shows all walls. Fixtures and supplier offers are stored but not rendered yet. One actual room photo is shown under Project. Furniture is schematic with 18 mm cupboard panels, without manufacturing validation. Finishes are colour approximations, not realistic timber textures or calibrated samples. No mirror reflections yet. No rotation, non-rectangular geometry, door swing or aisle checks. No paid accounts, analytics, API keys or backend.
+
+
+## September 12 update
+Three prefab layout comparisons are available in Options, based on Leroy Merlin listings. Budget R20,000; rural Hekpoort delivery is unquoted. Cupboard-only totals R3,298 / R8,596 / R12,796. Interiors, table and chair are schematic, not manufacturer drawings. Stock signals conflict, so confirm availability before purchase.
+
+The browser automatically saves the current project locally. Export JSON for backup. The local preview must be running to open http://127.0.0.1:5173/. Run npm run dev from this folder to restart it.
+
+Furniture dimensions, positions, cardinal orientation, finish, shelf/drawer counts, rail height, shelf-bay proportion and door visibility can be edited. Room opening and fixture dimensions can be edited; fixtures are recorded but not rendered. No automatic door-swing or clothing-envelope collision checks.

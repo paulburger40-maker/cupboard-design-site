@@ -2,7 +2,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import { Suspense, useEffect, useRef } from 'react';
 import { DoubleSide, Shape } from 'three';
-import type { Item, RoomProject } from '../data/room';
+import { footprint, type Item, type RoomProject } from '../data/room';
 const finishes = { oak: '#b68b57', white: '#eeeae2', walnut: '#60422e' };
 function CameraRig({inside,w,d,h}:{inside:boolean;w:number;d:number;h:number}){
   const {camera}=useThree();const controls=useRef<any>(null);
@@ -14,20 +14,23 @@ function Box({size,position,color,metal=false}: {size:[number,number,number];pos
 }
 function Furniture({item,onSelect}: {item:Item;onSelect:(id:string)=>void}) {
   const w=item.size.width/1000, h=item.size.height/1000, d=item.size.depth/1000, t=0.018, c=finishes[item.finish];
-  return <group position={[item.position.x/1000,0,item.position.z/1000]} onClick={e=>{e.stopPropagation();onSelect(item.id)}}>
+  const f=footprint(item), interior=item.interior??{shelves:2,drawers:2,railHeight:h*650,split:.5,doors:false}; const split=interior.split;
+  return <group position={[(item.position.x+f.width/2)/1000,0,(item.position.z+f.depth/2)/1000]} rotation={[0,(item.rotation??0)*Math.PI/180,0]}><group position={[-w/2,0,-d/2]} onClick={e=>{e.stopPropagation();onSelect(item.id)}}>
     {item.kind==='cupboard' ? <>
       <Box size={[w,h,t]} position={[w/2,h/2,d-t/2]} color={c}/>
       {[t/2,w-t/2].map(x=><Box key={x} size={[t,h,d]} position={[x,h/2,d/2]} color={c}/>)}
-      {[t/2,h*0.28,h*0.72,h-t/2].map(y=><Box key={y} size={[w,t,d]} position={[w/2,y,d/2]} color={c}/>)}
-      <Box size={[t,h,d]} position={[w/2,h/2,d/2]} color={c}/>
-      {[0.11,0.2].map(y=><Box key={y} size={[w/2-0.04,h*0.08,t]} position={[w*0.25,h*y,0.025]} color={c}/>)}
-      <Box size={[w/2-0.04,0.025,0.025]} position={[w*0.75,h*0.65,d/2]} color="#bcb6a8" metal/>
+      {[t/2,h-t/2].map(y=><Box key={y} size={[w,t,d]} position={[w/2,y,d/2]} color={c}/>)}
+      <Box size={[t,h,d]} position={[w*split,h/2,d/2]} color={c}/>
+      {Array.from({length:interior.shelves},(_,i)=><Box key={'s'+i} size={[w*split,t,d]} position={[w*split/2,h*(i+1)/(interior.shelves+1),d/2]} color={c}/>)}
+      {Array.from({length:interior.drawers},(_,i)=><Box key={'d'+i} size={[w*(1-split)-.04,.17,t]} position={[w*(1+split)/2,.13+i*.19,.025]} color={c}/>)}
+      <Box size={[w*(1-split)-.04,.025,.025]} position={[w*(1+split)/2,interior.railHeight/1000,d/2]} color="#42423e" metal/>
+      {interior.doors&&[.25,.75].map(x=><Box key={x} size={[w/2-.008,h-.02,.018]} position={[w*x,h/2,-.015]} color={c}/>)}
     </> : <>
       <Box size={[w,0.045,d]} position={[w/2,item.kind==='chair'?h*0.53:h-0.023,d/2]} color={c}/>
       {[0.04,w-0.04].flatMap(x=>[0.04,d-0.04].map(z=><Box key={`${x}-${z}`} size={[0.035,item.kind==='chair'?h*0.5:h-0.045,0.035]} position={[x,item.kind==='chair'?h*0.25:(h-0.045)/2,z]} color="#393632"/>))}
       {item.kind==='chair' && <Box size={[w,h*0.45,0.05]} position={[w/2,h*0.775,d-0.025]} color={c}/>}
     </>}
-  </group>;
+  </group></group>;
 }
 export default function RoomView({project,inside,onSelect}: {project:RoomProject;inside:boolean;onSelect:(id:string)=>void}) {
   const w=(project.room.width||3600)/1000, d=(project.room.depth||4200)/1000, h=(project.room.height||2700)/1000;
