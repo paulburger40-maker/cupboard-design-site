@@ -8,6 +8,7 @@ export type Item = { id: string; kind: 'cupboard' | 'vanity' | 'chair'; name: st
 export function footprint(item:Item){const swap=(item.rotation??0)%180!==0;return {width:swap?item.size.depth:item.size.width,depth:swap?item.size.width:item.size.depth};}
 export interface RoomProject {
   schemaVersion: 1;
+  layoutRevision: 2;
   name: string;
   units: 'mm';
   measurementStatus: 'awaiting-measurements' | 'draft' | 'verified' | 'demo';
@@ -21,7 +22,7 @@ export interface RoomProject {
   preferences: { budgetZar: number | null; styleNotes: string; storageNeeds: string; currency: 'ZAR' };
 }
 export const blankProject: RoomProject = {
-  schemaVersion: 1, name: 'Paul & Carla · Walk-in closet', units: 'mm', measurementStatus: 'awaiting-measurements',
+  schemaVersion: 1, layoutRevision: 2, name: 'Paul & Carla · Walk-in closet', units: 'mm', measurementStatus: 'awaiting-measurements',
   sourceChat: 'https://chatgpt.com/share/6aa540b1-2394-83e9-ab8f-fd889c2f37bf?ogimg=plain',
   room: { shape: 'rectangle', width: null, depth: null, height: null, wallMeasurements: { front: null, back: null, left: null, right: null }, notes: '' },
   openings: [], fixtures: [], items: [], references: [], sourcing: [],
@@ -34,7 +35,7 @@ export const demoProject: RoomProject = {
     { id: 'wardrobe-1', kind: 'cupboard', name: 'Double wardrobe', size: { width: 1200, depth: 600, height: 2400 }, position: { x: 0, z: 3600 }, finish: 'oak', productId: null },
     { id: 'wardrobe-2', kind: 'cupboard', name: 'Drawer wardrobe', size: { width: 900, depth: 600, height: 2400 }, position: { x: 1200, z: 3600 }, finish: 'white', productId: null },
     { id: 'vanity-1', kind: 'vanity', name: 'Make-up table', size: { width: 1200, depth: 500, height: 760 }, position: { x: 2350, z: 3700 }, finish: 'oak', productId: null },
-    { id: 'chair-1', kind: 'chair', name: 'Vanity chair', size: { width: 500, depth: 500, height: 800 }, position: { x: 2700, z: 2850 }, finish: 'white', productId: null }
+    { id: 'chair-1', kind: 'chair', name: 'Vanity chair', size: { width: 500, depth: 500, height: 800 }, position: { x: 2700, z: 2850 }, finish: 'white', productId: null, rotation: 180 }
   ]
 };
 export function layoutWarnings(project: RoomProject): string[] {
